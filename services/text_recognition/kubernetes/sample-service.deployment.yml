@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # TODO: Replace SAMPLE-SERVICE by the name of your service
+  name: SAMPLE-SERVICE # use dash "-" and not underscore "_" in this file for the service name 
+  labels:
+    # TODO: Replace SAMPLE-SERVICE by the name of your service
+    app: SAMPLE-SERVICE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      # TODO: Replace SAMPLE-SERVICE by the name of your service
+      app: SAMPLE-SERVICE
+  template:
+    metadata:
+      labels:
+        # TODO: Replace SAMPLE-SERVICE by the name of your service
+        app: SAMPLE-SERVICE
+    spec:
+      containers:
+      # TODO: Replace SAMPLE-SERVICE by the name of your service
+      - name: SAMPLE-SERVICE
+        image: IMAGE_NAME
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 
+        env:
+        - name: APP_HOST
+          value: 0.0.0.0
+        - name: APP_PORT
+          value: "80"
+        - name: APP_LOG
+          value: info
+        - name: APP_ENGINE
+          value: "http://engine-service.project-dev.svc.cluster.local"
+        - name: APP_SERVICE
+          # TODO: Replace SAMPLE-SERVICE by the name of your service
+          value: "http://SAMPLE-SERVICE-service.project-dev.svc.cluster.local"
+      imagePullSecrets:
+      - name: mysecretdeployer

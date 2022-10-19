@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # TODO: Replace SAMPLE-SERVICE by the name of your service
+  # Use dash "-" and not underscore "_" in this file for the service name
+  name: service-SAMPLE-SERVICE
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      # TODO: Replace SAMPLE-SERVICE-PORT by the port used by your service
+      port: SAMPLE-SERVICE-PORT
+      targetPort: 80
+      protocol: TCP
+  selector:
+    # TODO: Replace SAMPLE-SERVICE by the name of your service
+    app: SAMPLE-SERVICE

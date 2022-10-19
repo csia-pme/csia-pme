@@ -1,0 +1,59 @@
+###
+# TODO: Replace SAMPLE SERVICE by the name of your service
+# SAMPLE SERVICE
+###
+
+include:
+    # TODO: Replace SAMPLE_SERVICE by the name of your service
+  - SAMPLE_SERVICE/model.yml
+
+download-model:
+  variables:
+    S3_URL: https://minio1.isc.heia-fr.ch:9007
+    S3_KEY_ID: $MINIO_ACCESS_KEY
+    S3_SECRET_KEY: $MINIO_SECRET_KEY
+  image: python:3.9
+  stage: prepare
+  before_script:
+    - pip3 install -r utils/requirements.txt
+  script:
+    # TODO: Replace SAMPLE_SERVICE by the name of your service
+    - python3 utils/s3client.py pull model.h5 $SAMPLE_SERVICE_S3_MODEL_PATH
+  artifacts:
+    paths:
+    - model.h5
+    expire_in: 10 min
+  only:
+    refs:
+      - merge_requests
+      - dev
+    changes:
+      # TODO: Replace SAMPLE-SERVICE by the name of your service
+      - SAMPLE_SERVICE/**/*
+
+# TODO: Replace SAMPLE-SERVICE by the name of your service
+deploy-SAMPLE_SERVICE:
+  variables:
+    # TODO: Replace SAMPLE-SERVICE by the name of your service
+    SERVICE_NAME: SAMPLE_SERVICE
+  image: lachlanevenson/k8s-kubectl:latest
+  stage: deploy
+  tags:
+    - k8s
+  # when: manual
+  script:
+    - echo $KUBE_CONFIG | base64 -d > kubeconfig.txt
+    - export KUBECONFIG=$(pwd)/kubeconfig.txt
+    # Check if KUBECONFIG is configured
+    - kubectl config get-contexts
+    # Change name of 
+    - sed -i "s~IMAGE_NAME~$CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_COMMIT_SHORT_SHA~g" ./$SERVICE_NAME/kubernetes/deployment.yml 
+    - kubectl apply -f ./$SERVICE_NAME/kubernetes/deployment.yml -n project-dev
+    # Create services
+    - kubectl apply -f ./$SERVICE_NAME/kubernetes/service.yml -n project-dev
+  only:
+    refs:
+      - dev
+    changes:
+      # TODO: Replace SAMPLE-SERVICE by the name of your service
+      - SAMPLE_SERVICE/**/*
