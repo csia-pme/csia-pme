@@ -1,6 +1,7 @@
 import asyncio
 import httpx
 import logging
+from io import BytesIO
 
 class Worker():
 	def __init__(self):
@@ -32,19 +33,32 @@ class Worker():
 				if result is not None and self.next is not None:
 					await self.next.addTask(result)
 
-	async def image_to_text(task):
+	async def image_to_text(self, task):
+		params = {
+			"language": (await task["language"].read()).decode("utf-8")
+		}
 
-	# TODO: implement this method to process the task of the service
+		file = {
+			"image": (
+				task["image"].filename,
+				task["image"].file,
+				task["image"].content_type
+				)
+			}
+
+		response = httpx.post("https://icoservices.kube.isc.heia-fr.ch/text-recognition/image-to-text", files=file, params=params)
+		task["result"] = response.json()
+
+
 	async def process(self, task):
 		try:
 			if task["operation"] == 'image-to-text':
-				pass
+				await self.image_to_text(task)
 			if task["operation"] == 'image-to-pdf':
 				pass
 			if task["operation"] == 'image-to-data':
 				pass
 
-			task["result"] = {"result": task["operation"]}
 		except Exception as e:
 			task["error"] = "Failed to process image: " + str(e)
 
