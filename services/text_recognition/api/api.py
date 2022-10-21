@@ -50,9 +50,25 @@ app = FastAPI(on_startup=[startup], on_shutdown=[shutdown])
 timers = []
 
 @app.post("/image-to-text", response_model=interface.TaskId)
-async def post(language: UploadFile, image: UploadFile, callback_url: str = None, task_id: str = None):
+async def image_to_text(language: UploadFile, image: UploadFile, callback_url: str = None, task_id: str = None):
 	if task_id is None:
 		task_id = str(interface.uid())
 	task = {"operation": "image-to-text", "callback_url": callback_url, "task_id": task_id, "language": language, "image": image}
+	await worker.addTask(task)
+	return interface.TaskId(task_id=task_id)
+
+@app.post("/image-to-pdf", response_model=interface.TaskId)
+async def image_to_pdf(language: UploadFile, image: UploadFile, callback_url: str = None, task_id: str = None):
+	if task_id is None:
+		task_id = str(interface.uid())
+	task = {"operation": "image-to-pdf", "callback_url": callback_url, "task_id": task_id, "language": language, "image": image}
+	await worker.addTask(task)
+	return interface.TaskId(task_id=task_id)
+
+@app.post("/image-to-data", response_model=interface.TaskId)
+async def image_to_data(language: UploadFile, image: UploadFile, callback_url: str = None, task_id: str = None):
+	if task_id is None:
+		task_id = str(interface.uid())
+	task = {"operation": "image-to-data", "callback_url": callback_url, "task_id": task_id, "language": language, "image": image}
 	await worker.addTask(task)
 	return interface.TaskId(task_id=task_id)

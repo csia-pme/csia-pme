@@ -18,23 +18,23 @@ engineAPI = {
         "image-to-text": {
             "route": "image-to-text", 
             "body": ["language", "image"],
-            "bodyType": ["text/plain", "[image/png, image/jpg]"],
+            "bodyType": ["text/plain", "[image/png, image/jpeg]"],
             "resultType": ["application/json"],
-            "summary": "Returns the text in an image using Tesseract"
-        }
-    }
+            "summary": "Returns the text in an image"
+        },
+        "image-to-pdf": {
+            "route": "image-to-pdf", 
+            "body": ["language", "image"],
+            "bodyType": ["text/plain", "[image/png, image/jpeg]"],
+            "resultType": ["application/pdf"],
+            "summary": "Returns a PDF with the recognized text selectable from an image"
+        },
+        "image-to-data": {
+            "route": "image-to-data", 
+            "body": ["language", "image"],
+            "bodyType": ["text/plain", "[image/png, image/jpeg]"],
+            "resultType": ["application/json"],
+            "summary": "Returns the meta-data of recognized text in an image"
+        },
 
-# else if the service has multiple routes
-# engineAPI = {
-#   "route1": {
-#       "route": "image-SERVICE", "body": ["param1", "param2", "..."],
-#       "bodyType": ["[image/png, image/jpg]", "type2", "..."],
-#       "resultType": ["[image/png, image/jpg]", "type2", "..."],
-#       "summary": "Describe the service here..."
-#   },
-#   "route2": {
-#       "route": "SAMPLE-SERVICE-2", "body": ["param1", "param2", "..."],
-#       "bodyType": ["[image/png, image/jpg]", "type2", "..."],
-#       "resultType": ["[image/png, image/jpg]", "type2", "..."],
-#       "summary": "Describe the service here..."
-#   },
+    }

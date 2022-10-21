@@ -33,7 +33,7 @@ class Worker():
 				if result is not None and self.next is not None:
 					await self.next.addTask(result)
 
-	async def image_to_text(self, task):
+	async def post_request_to_endpoint(self , task):
 		params = {
 			"language": (await task["language"].read()).decode("utf-8")
 		}
@@ -42,23 +42,21 @@ class Worker():
 			"image": (
 				task["image"].filename,
 				task["image"].file,
-				task["image"].content_type
+				#task["image"].content_type
+				"image/png" # Due to engine not sending MIME
 				)
 			}
 
-		response = httpx.post("https://icoservices.kube.isc.heia-fr.ch/text-recognition/image-to-text", files=file, params=params)
-		task["result"] = response.json()
-
-
+		return httpx.post(f"https://icoservices.kube.isc.heia-fr.ch/text-recognition/{task['operation']}", files=file, params=params)
+	
 	async def process(self, task):
 		try:
-			if task["operation"] == 'image-to-text':
-				await self.image_to_text(task)
-			if task["operation"] == 'image-to-pdf':
-				pass
-			if task["operation"] == 'image-to-data':
-				pass
-
+			if task["operation"] == "image-to-pdf":
+				task["result"] = (await self.post_request_to_endpoint(task)).content
+			elif task["operation"] == "image-to-data":
+				task["result"] = {"result": (await self.post_request_to_endpoint(task)).json()} # Due to bug in engine with tables in top level
+			elif task["operation"] == "image-to-text":
+				task["result"] = (await self.post_request_to_endpoint(task)).json()
 		except Exception as e:
 			task["error"] = "Failed to process image: " + str(e)
 
@@ -73,12 +71,14 @@ class Callback(Worker):
 		url = task["callback_url"]
 		task_id = task["task_id"]
 		if url is not None:
-			data = None
-			if "error" in task:
-				data = {"type": "error", "message": task["error"]}
-			else:
-				data = task["result"]
+			res = task["result"] if "result" in task else None
 			try:
-				await self.client.post(url, params={"task_id": task_id}, json=data)
+				if "error" in task:
+					data = {"type": "error", "message": task["error"]}
+					await self.client.post(url, params={"task_id": task_id}, json=data)
+				elif type(res) is dict:
+					await self.client.post(url, params={"task_id": task_id}, json=res)
+				elif type(res) is bytes:
+					await self.client.post(url, params={"task_id": task_id}, files={"result": res})
 			except Exception as e:
 				logging.getLogger("uvicorn").warning("Failed to send back result (" + url + "): " + str(e))
