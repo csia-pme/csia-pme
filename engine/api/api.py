@@ -157,58 +157,58 @@ app.add_middleware(
 	allow_headers=["*"],
 )
 
-@app.get("/tasks/{taskId}", summary="Get results of a task")
-async def getTaskResult(taskId: str):
-	result = await engine.getResult(taskId)
-	return JSONResponse(result)
+# @app.get("/tasks/{taskId}", summary="Get results of a task")
+# async def getTaskResult(taskId: str):
+# 	result = await engine.getResult(taskId)
+# 	return JSONResponse(result)
+#
+# @app.get("/tasks/{taskId}/status", summary="Get the status of a task")
+# async def getTaskStatus(taskId: str):
+# 	return await engine.pollTask(taskId)
+#
+# @app.get("/tasks/{taskId}/raw", summary="Get raw pipeline data for a task")
+# async def getTaskRaw(taskId: str):
+# 	raw = await engine.getJobRaw(taskId)
+# 	return JSONResponse(raw)
+#
+# @app.get("/tasks/{taskId}/files/{fileName}", summary="Retrieve a binary result of a task")
+# async def getTaskResultFile(taskId: str, fileName: str):
+# 	stream = await engine.getResultFile(taskId, fileName)
+# 	return StreamingResponse(stream, media_type="application/octet-stream")
 
-@app.get("/tasks/{taskId}/status", summary="Get the status of a task")
-async def getTaskStatus(taskId: str):
-	return await engine.pollTask(taskId)
+# @app.post("/services", summary="Create a new service or pipeline")
+# async def createService(service: Union[interface.ServiceDescription, interface.PipelineDescription]):
+# 	if service.type is interface.ServiceType.SERVICE:
+# 		serviceName = service.api.route
+# 		if serviceName in engine.endpoints:
+# 			await engine.touchPipeline(serviceName)
+# 		else:
+# 			api = service.api.dict()
+# 			await engine.createServicePipeline(service.url, api)
+# 			addRoute(**api)
+# 	elif service.type is interface.ServiceType.PIPELINE:
+# 		api = await engine.addPipeline(service.dict())
+# 		addRoute(**api)
 
-@app.get("/tasks/{taskId}/raw", summary="Get raw pipeline data for a task")
-async def getTaskRaw(taskId: str):
-	raw = await engine.getJobRaw(taskId)
-	return JSONResponse(raw)
+# @app.get("/services", summary="Get all pipelines", response_model=List[interface.PipelineDescription])
+# async def getPipelines():
+# 	pipelines = await engine.getPipelines()
+# 	return pipelines
 
-@app.get("/tasks/{taskId}/files/{fileName}", summary="Retrieve a binary result of a task")
-async def getTaskResultFile(taskId: str, fileName: str):
-	stream = await engine.getResultFile(taskId, fileName)
-	return StreamingResponse(stream, media_type="application/octet-stream")
+# @app.get("/stats", summary="Get engine and pipelines statistics")
+# async def getStats():
+# 	stats = await engine.getStats()
+# 	return JSONResponse(stats)
 
-@app.post("/services", summary="Create a new service or pipeline")
-async def createService(service: Union[interface.ServiceDescription, interface.PipelineDescription]):
-	if service.type is interface.ServiceType.SERVICE:
-		serviceName = service.api.route
-		if serviceName in engine.endpoints:
-			await engine.touchPipeline(serviceName)
-		else:
-			api = service.api.dict()
-			await engine.createServicePipeline(service.url, api)
-			addRoute(**api)
-	elif service.type is interface.ServiceType.PIPELINE:
-		api = await engine.addPipeline(service.dict())
-		addRoute(**api)
-
-@app.get("/services", summary="Get all pipelines", response_model=List[interface.PipelineDescription])
-async def getPipelines():
-	pipelines = await engine.getPipelines()
-	return pipelines
-
-@app.get("/stats", summary="Get engine and pipelines statistics")
-async def getStats():
-	stats = await engine.getStats()
-	return JSONResponse(stats)
-
-@app.delete("/services/{serviceName}", summary="Remove a service or pipeline")
-async def deleteService(serviceName: str):
-	if serviceName in engine.endpoints:
-		await removeService(serviceName)
-
-@app.get("/services/{serviceName}", summary="Get the pipeline description", response_model=interface.PipelineDescription)
-async def getPipeline(serviceName: str):
-	pipeline = await engine.getPipeline(serviceName)
-	return pipeline
+# @app.delete("/services/{serviceName}", summary="Remove a service or pipeline")
+# async def deleteService(serviceName: str):
+# 	if serviceName in engine.endpoints:
+# 		await removeService(serviceName)
+#
+# @app.get("/services/{serviceName}", summary="Get the pipeline description", response_model=interface.PipelineDescription)
+# async def getPipeline(serviceName: str):
+# 	pipeline = await engine.getPipeline(serviceName)
+# 	return pipeline
 
 @app.post("/processing", include_in_schema=False)
 async def processCallback(task_id: str, request: Request):

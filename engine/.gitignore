@@ -1,1 +1,4 @@
-# Check parent `.gitignore` file for complete ignored files
+## Check parent `.gitignore` file for complete ignored files
+
+## Database
+*.db

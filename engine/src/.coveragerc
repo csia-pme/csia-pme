@@ -1,0 +1,5 @@
+[run]
+omit =
+    test_*.py
+    config.py
+    database.py
