@@ -1,0 +1,31 @@
+# to be rendered on sequencediagram.org
+title Starting a service
+
+actor "User" as A
+participant "Core" as B
+participant "Service" as C
+
+note over A,C:**user authentication**\nMAY be delegated (OpenID, ...)
+
+A->B: POST auth (username, password)
+A<-B: success + user_token
+
+note over A,C: **service request**\nas usual, but with an added user_token
+
+A->B: POST services/SERVICE_NAME/ (parameters, username, user_token)
+
+B->B: **user authorization**
+
+B->C: POST service_url (parameters, server_token)
+activate C
+C->C: Start service
+B<-C: ACK
+
+B->A: JobId
+
+note over C: Computation finished!
+C->B: callback
+deactivate C
+
+A->B: GET /task/JobId
+A<-B: result
