@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push Docker image to GitHub
         # Only run on main
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/36-create-first-anomaly-detection-service'
         uses: ./.github/actions/build-and-push-docker-image-to-github
         with:
           docker-registry-username: ${{ github.actor }}
@@ -39,7 +39,7 @@ jobs:
 
       - name: Prepare configuration files with secrets from GitHub Secrets
         # Only run on main
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/36-create-first-anomaly-detection-service'
         shell: bash
         working-directory: services/stat_anno_detection/model_serving/kubernetes
         env:
@@ -51,7 +51,7 @@ jobs:
 
       - name: Deploy stat-anno-detection Kubernetes cluster
         # Only run on main
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/36-create-first-anomaly-detection-service'
         uses: ./.github/actions/execute-command-on-kubernetes-cluster
         with:
           kube-config: ${{ secrets.KUBE_CONFIG }}
