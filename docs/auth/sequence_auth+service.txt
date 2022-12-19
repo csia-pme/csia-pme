@@ -21,11 +21,11 @@ activate C
 C->C: Start service
 B<-C: ACK
 
-B->A: JobId
+B->A: TaskId
 
 note over C: Computation finished!
 C->B: callback
 deactivate C
 
-A->B: GET /task/JobId
+A->B: GET /task/TaskId
 A<-B: result
